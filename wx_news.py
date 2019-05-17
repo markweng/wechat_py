@@ -10,16 +10,16 @@ from news import NewsGetter
 from itchat.content import *
 
 
-# KEY = '29a22f48eefa428e8e9d2d902997874d' 8edce3ce905a4c1dbb965e6b35c3834d
-
-KEY = 'bfa87c0e11024b5793d2cfd20c828502'
+KEY1 = 'bfa87c0e11024b5793d2cfd20c828502'
+KEY2 = '29a22f48eefa428e8e9d2d902997874d'
+KEY3 = 'b9ca706829e1435d92204950202caecd'
 
 def get_response(msg):
     # 这里我们就像在“3. 实现最简单的与图灵机器人的交互”中做的一样
     # 构造了要发送给服务器的数据
     apiUrl = 'http://www.tuling123.com/openapi/api'
     data = {
-        'key'    : KEY,
+        'key'    : KEY3,
         'info'   : msg,
         'userid' : 'wechat-robot',
     }
@@ -46,18 +46,6 @@ def tuling_reply(msg):
     # a or b的意思是，如果a有内容，那么返回a，否则返回b
     # 有内容一般就是指非空或者非None，你可以用`if a: print('True')`来测试
 
-#    if '王绵峰' in msg['Text']:
-#        itchat.send_msg('王绵峰是个混蛋！O__O', msg['FromUserName'])
-#        return
-#    if '嘘嘘' in msg['Text']:
-#        itchat.send_msg('嘘嘘是个混蛋！O__O', msg['FromUserName'])
-#        return
-#    if '翁成' in msg['Text']:
-#        itchat.send_msg('翁成是个好人！', msg['FromUserName'])
-#        return
-#    if '丰磊' in msg['Text']:
-#        itchat.send_msg('丰磊是个坏蛋！', msg['FromUserName'])
-#        return
 #    return reply or defaultReply
 
 
@@ -65,6 +53,7 @@ def tuling_reply(msg):
 # 处理群聊消息
 @itchat.msg_register(TEXT, isGroupChat=True)
 def text_reply(msg):
+#    print(msg)
     if(msg.isAt):
         if "早报" in msg['Text'].encode('utf8') :
 #            print(msg['ActualNickName'])
@@ -78,37 +67,12 @@ def text_reply(msg):
             reply = get_response(msg['Text'])
             itchat.send_msg(reply, msg['FromUserName'])
 
-#            print(text)
-#    defaultReply = 'I received: ' + msg['Text']
-#    if  '王绵峰' in msg['Text']:
-#        itchat.send_msg('王绵峰是个混蛋！O__O', msg['FromUserName'])
-#        return
-#    if  '嘘嘘' in msg['Text']:
-#        itchat.send_msg('嘘嘘是个混蛋！O__O', msg['FromUserName'])
-#        return
-#    if  '翁成' in msg['Text']:
-#        itchat.send_msg('翁成是个好人！', msg['FromUserName'])
-#        return
-
-#
-
-
 @itchat.msg_register(FRIENDS)
 def add_friend(msg):
 	itchat.add_friend(**msg['Text']) # 该操作会自动将新好友的消息录入，不需要重载通讯录
 	itchat.send_msg(u'你好哇,大色狼！', msg['RecommendInfo']['UserName'])
 
-# def print_time( enter_time ):
-#     print ("now is", time.time() , "enter_the_box_time is", enter_time)
-# Timer(5,  print_time, ( time.time(), )).run()
-
-# def printHello():
-#     print('hello')
-#     t = Timer(3, printHello)
-#     t.start()
-
-# printHello()
-itchat.auto_login(hotReload=True)
+itchat.auto_login(hotReload=True,enableCmdQR=2)
 itchat.run()
 
 
