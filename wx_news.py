@@ -35,11 +35,12 @@ def get_response(msg):
                 CURRENT_KEY = CURRENT_KEY + 1
             else:
                 CURRENT_KEY = 0 
-            return get_response(msg)        
-        else if '申请额外加次数' in msg.encode('utf8'):
+            return get_response(msg)    
+
+        if '申请额外加次数' in msg.encode('utf8') :
             return get_response(msg)
-        else :    
-            return r.get('text')
+            
+        return r.get('text')
 
     except:
         return
