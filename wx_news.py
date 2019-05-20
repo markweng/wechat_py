@@ -18,6 +18,7 @@ KEYS = [KEY1,KEY2,KEY3]
 CURRENT_KEY = 2
 
 def get_response(msg):
+    global CURRENT_KEY
     key = KEYS[CURRENT_KEY]
     apiUrl = 'http://www.tuling123.com/openapi/api'
     data = {
@@ -28,7 +29,6 @@ def get_response(msg):
     try:
         r = requests.post(apiUrl, data=data).json()
         print(r)
-        global CURRENT_KEY
         msg = r.get('text')
         if '当天请求次数已用完' in msg.encode('utf8') :
             if CURRENT_KEY < 2 :
