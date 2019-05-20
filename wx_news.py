@@ -14,17 +14,29 @@ from itchat.content import *
 KEY1 = 'bfa87c0e11024b5793d2cfd20c828502'
 KEY2 = '29a22f48eefa428e8e9d2d902997874d'
 KEY3 = 'b9ca706829e1435d92204950202caecd'
+KEYS = [KEY1,KEY2,KEY3]
+CURRENT_KEY = 2
 
 def get_response(msg):
+    key = KEYS[CURRENT_KEY]
     apiUrl = 'http://www.tuling123.com/openapi/api'
     data = {
-        'key'    : KEY3,
+        'key'    : key,
         'info'   : msg,
         'userid' : 'wechat-robot',
     }
     try:
         r = requests.post(apiUrl, data=data).json()
-        return r.get('text')
+        print(r)
+        msg = r.get('text')
+        if '当天请求次数已用完' in msg.encode('utf8') :
+            if CURRENT_KEY < 2 :
+                CURRENT_KEY = CURRENT_KEY + 1
+            else:
+                CURRENT_KEY = 0 
+            return get_response(msg)        
+        else:
+            return r.get('text')
 
     except:
         return
@@ -63,8 +75,17 @@ def text_reply(msg):
             today = datetime.date.today()
             formatted_today = today.strftime('20%y-%m-%d') + '   ' + 'Share to do morning reading:' + '\n'
             itchat.send_msg(fromName + '\n' + formatted_today + '\n' + newsText, msg['FromUserName'])
+        if 'emoj' in msg['Text'] :
+        #  if 'weng' in nickName :
+            #  newtext = 'my dear，loading...'
+            #  itchat.send_msg(newtext,msg['FromUserName'])
+        #  else :
+            #  newtext = 'loading...'
+            #  itchat.send_msg(newtext,msg['FromUserName'])
+         emojMgr = EmojMgr(msg['Text'].encode('utf8'), msg['FromUserName'])
+         emojMgr.run_main()
         else :
-            reply = get_response(msg['Text'])
+            reply = get_response(msg['Text'])            
             itchat.send_msg(reply, msg['FromUserName'])
 
 @itchat.msg_register(FRIENDS)
@@ -74,7 +95,7 @@ def add_friend(msg):
 
 itchat.auto_login(hotReload=True,enableCmdQR=2)
 itchat.run()
-#itchat.logout()
+# itchat.logout()
 
 
 
