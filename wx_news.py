@@ -28,6 +28,7 @@ def get_response(msg):
     try:
         r = requests.post(apiUrl, data=data).json()
         print(r)
+        global CURRENT_KEY
         msg = r.get('text')
         if '当天请求次数已用完' in msg.encode('utf8') :
             if CURRENT_KEY < 2 :
