@@ -17,8 +17,10 @@ sys.setdefaultencoding('utf-8')
 KEY1 = 'bfa87c0e11024b5793d2cfd20c828502'
 KEY2 = '29a22f48eefa428e8e9d2d902997874d'
 KEY3 = 'b9ca706829e1435d92204950202caecd'
-KEYS = [KEY1,KEY2,KEY3]
-CURRENT_KEY = 2
+KEY4 = 'bd35d0e4054c6a4c06059f1a454bd2d3'
+KEYS = [KEY1,KEY2,KEY3,KEY4]
+KEY_COUNT = 4
+CURRENT_KEY = 1
 
 def get_response(msg):
     global CURRENT_KEY
@@ -34,7 +36,7 @@ def get_response(msg):
         print(r)
         msg = r.get('text')
         if '当天请求次数已用完' in msg.encode('utf8') :
-            if CURRENT_KEY < 2 :
+            if CURRENT_KEY < KEY_COUNT - 1 :
                 CURRENT_KEY = CURRENT_KEY + 1
             else:
                 CURRENT_KEY = 0 
