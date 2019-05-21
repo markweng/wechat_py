@@ -79,7 +79,8 @@ def text_reply(msg):
             today = datetime.date.today()
             formatted_today = today.strftime('20%y-%m-%d') + '   ' + 'Share to do morning reading:' + '\n'
             itchat.send_msg(fromName + '\n' + formatted_today + '\n' + newsText, msg['FromUserName'])
-        if 'emoj' in msg['Text'] :
+            return    
+        elif 'emoj' in msg['Text'] :
         #  if 'weng' in nickName :
             #  newtext = 'my dear，loading...'
             #  itchat.send_msg(newtext,msg['FromUserName'])
@@ -88,14 +89,18 @@ def text_reply(msg):
             #  itchat.send_msg(newtext,msg['FromUserName'])
          emojMgr = EmojMgr(msg['Text'].encode('utf8'), msg['FromUserName'])
          emojMgr.run_main()
+         return
         else :
+            amsg = msg['Text'].replace('@robot','')
             reply = get_response(msg['Text'])            
             itchat.send_msg(reply, msg['FromUserName'])
+    elif "@weng" in msg['Text'].encode('utf8') :
+        itchat.send_msg('主人可能在忙哦！可以直接@我聊天哦！', msg['FromUserName'])
+      
 
 @itchat.msg_register(FRIENDS)
 def add_friend(msg):
     msg.user.verify()
-
 
 itchat.auto_login(hotReload=True,enableCmdQR=2)
 itchat.run()
