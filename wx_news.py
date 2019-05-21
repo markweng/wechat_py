@@ -95,7 +95,7 @@ def text_reply(msg):
             reply = get_response(msg['Text'])            
             itchat.send_msg(reply, msg['FromUserName'])
     elif "@weng" in msg['Text'].encode('utf8') :
-        itchat.send_msg('主人可能在忙哦！可以直接@我聊天哦！'.encode('utf8'), msg['FromUserName'])
+        itchat.send_msg(unicode('主人可能在忙哦！可以直接@我聊天哦！'), msg['FromUserName'])
       
 
 @itchat.msg_register(FRIENDS)
