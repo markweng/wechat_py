@@ -4,12 +4,15 @@
 import requests
 import itchat
 import datetime
+import sys
 # import times
 # from threading import Timer
 from news import NewsGetter
 from emojmgr import EmojMgr
 from itchat.content import *
 
+reload(sys)
+sys.setdefaultencoding('utf-8')
 
 KEY1 = 'bfa87c0e11024b5793d2cfd20c828502'
 KEY2 = '29a22f48eefa428e8e9d2d902997874d'
@@ -95,7 +98,7 @@ def text_reply(msg):
             reply = get_response(msg['Text'])            
             itchat.send_msg(reply, msg['FromUserName'])
     elif "@weng" in msg['Text'].encode('utf8') :
-        amsg = unicode('hello!')
+        amsg = '主人可能正在忙哦，你也可以@我聊聊！'
         itchat.send_msg(amsg, msg['FromUserName'])
       
 
