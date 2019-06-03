@@ -15,7 +15,7 @@ from timer import *
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-USER_NAME = '@robot' #@robot @集市&小行家
+USER_NAME = '@集市&小行家' #@robot @集市&小行家
 
 # 消息
 @itchat.msg_register(itchat.content.TEXT)
@@ -49,8 +49,7 @@ def text_reply(msg):
             newsText = ng.getNews()
 #            print(newsText)
             fromName = '@' + msg['ActualNickName'] + '  ' + 'Morning!' +  '\n'
-            today = datetime.date.today()
-            formatted_today = today.strftime('20%y-%m-%d') + '   ' + 'Share to do morning reading:' + '\n'
+            formatted_today = datetime.now().strftime("20%y-%m-%d") + '   ' + 'Share to do morning reading:' + '\n'
             itchat.send_msg(fromName + '\n' + formatted_today + '\n' + newsText, msg['FromUserName'])
             return    
         elif 'emoj' in msg['Text']:
