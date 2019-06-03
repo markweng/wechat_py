@@ -1,52 +1,21 @@
-# -*- coding: utf-8 -*-
-# author wengcheng
-# 加载包
+# coding=utf-8
+# # author wengcheng
+
 import requests
 import itchat
 import datetime
 import sys
-# import times
-# from threading import Timer
 from news import NewsGetter
 from emojmgr import EmojMgr
+from analysechat import *
 from itchat.content import *
-
+from tulingmsg.tulingmgr import tlbot
+from qinghua.dailyloverword import wordmgr
+from timer import *
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-KEY1 = 'bfa87c0e11024b5793d2cfd20c828502'
-KEY2 = '29a22f48eefa428e8e9d2d902997874d'
-KEY3 = 'b9ca706829e1435d92204950202caecd'
-KEYS = [KEY1,KEY2,KEY3]
-CURRENT_KEY = 2
-
-def get_response(msg):
-    global CURRENT_KEY
-    key = KEYS[CURRENT_KEY]
-    apiUrl = 'http://www.tuling123.com/openapi/api'
-    data = {
-        'key'    : key,
-        'info'   : msg,
-        'userid' : 'wechat-robot',
-    }
-    try:
-        r = requests.post(apiUrl, data=data).json()
-        print(r)
-        msg = r.get('text')
-        if '当天请求次数已用完' in msg.encode('utf8') :
-            if CURRENT_KEY < 2 :
-                CURRENT_KEY = CURRENT_KEY + 1
-            else:
-                CURRENT_KEY = 0 
-            return get_response(msg)    
-
-        if '申请额外加次数' in msg.encode('utf8') :
-            return get_response(msg)
-            
-        return r.get('text')
-
-    except:
-        return
+USER_NAME = '@robot' #@robot @集市&小行家
 
 # 消息
 @itchat.msg_register(itchat.content.TEXT)
@@ -55,7 +24,7 @@ def tuling_reply(msg):
     print(nickName)
     # itchat.send_image('./emojs/hahahha.jpg',msg['FromUserName'])
     fromUserName = msg['FromUserName']
-    if 'emoj' in msg['Text'] :
+    if 'emoj' in msg['Text']:
         #  if 'weng' in nickName :
             #  newtext = 'my dear，loading...'
             #  itchat.send_msg(newtext,msg['FromUserName'])
@@ -65,13 +34,14 @@ def tuling_reply(msg):
          emojMgr = EmojMgr(msg['Text'].encode('utf8'),fromUserName)
          emojMgr.run_main()
     else :
-        reply = get_response(msg['Text'])
+        amsg = msg['Text']
+        reply = tlbot.getBotMsg(amsg)
         itchat.send_msg(reply, msg['FromUserName'])
 
 # 处理群聊消息
 @itchat.msg_register(TEXT, isGroupChat=True)
 def text_reply(msg):
-#    print(msg)
+    print(msg['Text'].encode('utf8'))
     if(msg.isAt):
         if "早报" in msg['Text'].encode('utf8') :
 #            print(msg['ActualNickName'])
@@ -83,25 +53,33 @@ def text_reply(msg):
             formatted_today = today.strftime('20%y-%m-%d') + '   ' + 'Share to do morning reading:' + '\n'
             itchat.send_msg(fromName + '\n' + formatted_today + '\n' + newsText, msg['FromUserName'])
             return    
-        elif 'emoj' in msg['Text'] :
+        elif 'emoj' in msg['Text']:
         #  if 'weng' in nickName :
             #  newtext = 'my dear，loading...'
             #  itchat.send_msg(newtext,msg['FromUserName'])
         #  else :
             #  newtext = 'loading...'
             #  itchat.send_msg(newtext,msg['FromUserName'])
-         emojMgr = EmojMgr(msg['Text'].encode('utf8'), msg['FromUserName'])
-         emojMgr.run_main()
-         return
-        else :
-            amsg = msg['Text'].replace('@robot','')
-            reply = get_response(msg['Text'])            
-            itchat.send_msg(reply, msg['FromUserName'])
-    elif "@weng" in msg['Text'].encode('utf8') :
+            emojMgr = EmojMgr(msg['Text'].encode('utf8'), msg['FromUserName'])
+            emojMgr.run_main()
+            return
+        elif '情话' in msg['Text'].encode('utf8'):
+            aword = wordmgr.getWord()
+            itchat.send_msg(aword, msg['FromUserName'])
+            return    
+        elif '订阅消息' in msg['Text'].encode('utf8'):
+            timedTask(msg['FromUserName'])
+            return
+        else:
+            amsg = msg['Text'].replace(USER_NAME,'')
+            reply = tlbot.getBotMsg(amsg)            
+            itchat.send_msg(reply, msg['FromUserName'])    
+    elif "@weng" in msg['Text'].encode('utf8'):
         amsg = '主人可能正在忙哦，你也可以@我聊聊！'
         itchat.send_msg(amsg, msg['FromUserName'])
-      
+        getroom_message()
 
+#添加好友  
 @itchat.msg_register(FRIENDS)
 def add_friend(msg):
     msg.user.verify()

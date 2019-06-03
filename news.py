@@ -24,7 +24,7 @@ class NewsGetter:
             #            print(text)
                     break
             if isFind == True:
-              newsUrl = 'https://m.sohu.com' + link.get('href')
+              newsUrl = 'https:' + link.get('href')
               break
         #print(newsUrl)
 
