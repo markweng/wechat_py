@@ -12,10 +12,11 @@ from itchat.content import *
 from tulingmsg.tulingmgr import tlbot
 from qinghua.dailyloverword import wordmgr
 from timer import *
+from datasource import datasource
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-USER_NAME = '@集市&小行家' #@robot @集市&小行家
+USER_NAME = '@robot' #@robot @集市&小行家
 
 # 消息
 @itchat.msg_register(itchat.content.TEXT)
@@ -67,8 +68,19 @@ def text_reply(msg):
             itchat.send_msg(aword, msg['FromUserName'])
             return    
         elif '订阅消息' in msg['Text'].encode('utf8'):
-            timedTask(msg['FromUserName'])
+            if msg['FromUserName'] in datasource.getSubscribers():
+                itchat.send_msg('该群已经订阅，无需重复订阅！', msg['FromUserName'])
+                return
+            datasource.addSubscriberToQueue(msg['FromUserName'])
+            itchat.send_msg('订阅成功！', msg['FromUserName'])
             return
+        elif '取消订阅' in msg['Text'].encode('utf8'):
+            if msg['FromUserName'] not in datasource.getSubscribers():
+                itchat.send_msg('该群未曾订阅，无需取消订阅！', msg['FromUserName'])
+                return
+            datasource.removeSubscriberFromQueue(msg['FromUserName'])
+            itchat.send_msg('取消订阅成功！', msg['FromUserName'])
+            return    
         else:
             amsg = msg['Text'].replace(USER_NAME,'')
             reply = tlbot.getBotMsg(amsg)            
@@ -78,6 +90,7 @@ def text_reply(msg):
         itchat.send_msg(amsg, msg['FromUserName'])
         getroom_message()
 
+
 #添加好友  
 @itchat.msg_register(FRIENDS)
 def add_friend(msg):
@@ -85,6 +98,8 @@ def add_friend(msg):
 
 itchat.auto_login(hotReload=True,enableCmdQR=2)
 itchat.run()
+
+
 # itchat.logout()
 
 
